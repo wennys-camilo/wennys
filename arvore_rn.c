@@ -109,12 +109,12 @@ void preordem(No **r){
     if((*r)->cor == VERMELHO)
         printf("VERMELHO  ");
     else
-        printf("PRETO   ");
+        printf("PRETO     ");
     
     if((*r)->pai == NULL){
         printf("%i [raiz]\n",(*r)->dado);
     }else{
-    printf("%i [PAI: %i]\n",(*r)->dado,(*r)->pai->dado);
+        printf("%i [PAI: %i]\n",(*r)->dado,(*r)->pai->dado);
     }
     preordem(&(*r)->esq);
     preordem(&(*r)->dir);
@@ -170,10 +170,24 @@ void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado){
     preordem(&avo);
 
     avaliado = avo;
+    }else{
+        if(pai->dir == avaliado){ //caso 2
+        if(avo == NULL){
+            rse(&pai);
+            *r = pai;
+        }else{
+            if(avo->esq == pai){
+            rse(&pai);
+            avo->esq = pai;
+    }else{
+        avo->dir = pai;
+         }
+
     }
-
+        avaliado=pai->esq;
+        }
+    }
 }
-
 void correcao(No **r, No *avaliado){
     while(avaliado->pai!=NULL){
         if(avaliado->pai->cor == PRETO)
