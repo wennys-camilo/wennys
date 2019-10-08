@@ -15,6 +15,8 @@ int menu();
 void preordem(No **r);
 No* maior_elemento(No **r);
 int remover(No **r,int vlr);
+void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado);
+int eh_vermelho(No *no);
 int inserirRB(No **r,int valor);
 void correcao(No **r, No *avaliado);
 No* inserir(No **r,int vlr);
@@ -161,7 +163,13 @@ void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado){
     No *tio = avo->dir;
 
     if(eh_vermelho(tio)){
+    pai->cor = PRETO;
+    avo->cor = VERMELHO;
+    tio->cor = PRETO;
 
+    preordem(&avo);
+
+    avaliado = avo;
     }
 
 }
