@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+typedef enum{VERMELHO, PRETO} Cor;
+
+
 typedef struct no{
     int dado;
+    Cor cor;
     struct no *esq,*dir,*pai;
 }No;
 
@@ -10,7 +15,9 @@ int menu();
 void preordem(No **r);
 No* maior_elemento(No **r);
 int remover(No **r,int vlr);
-void inserir(No **r,int vlr);
+int inserirRB(No **r,int valor);
+void correcao(No **r, No *avaliado);
+No* inserir(No **r,int vlr);
 int existe_n(No **r,int n);
 void rse(No **r);
 
@@ -29,7 +36,7 @@ int main(){
         case 1:{
         printf("Valor: ");
         scanf("%i", &valor);
-        inserir(&r, valor);
+        inserirRB(&r, valor);
         printf("Elemento %i inserido com sucesso!\n", valor);
         }break;
 
@@ -97,8 +104,13 @@ int remover(No **r,int vlr){
 
 void preordem(No **r){
     if(*r!=NULL){
+    if((*r)->cor == VERMELHO)
+        printf("VERMELHO  ");
+    else
+        printf("PRETO   ");
+    
     if((*r)->pai == NULL){
-    printf("%i [raiz]\n",(*r)->dado);
+        printf("%i [raiz]\n",(*r)->dado);
     }else{
     printf("%i [PAI: %i]\n",(*r)->dado,(*r)->pai->dado);
     }
@@ -107,23 +119,73 @@ void preordem(No **r){
     }
 }
 
-void inserir(No **r,int vlr){
+No* inserir(No **r,int vlr){
     if(*r == NULL){
         No *novo=(No*)malloc(sizeof(No));
         novo->dado = vlr;
         novo->esq = NULL;
         novo->dir = NULL;
         novo -> pai = NULL;
+        novo->cor = VERMELHO;
         *r = novo;
+        return novo;
     }else{
+        No *retorno;
         if(vlr>(*r)->dado){
-            inserir(&(*r)->dir,vlr);
+            retorno = inserir(&(*r)->dir,vlr);
             (*r)->dir->pai=*r;
         }else{
-            inserir(&(*r)->esq,vlr);
+            if(vlr < (*r)->dado){
+            retorno = inserir(&(*r)->esq,vlr);
             (*r)->esq->pai=*r;
+        }else{
+            return NULL;
+        }
+        }
+
+     return retorno;
+    }
+}
+
+int eh_vermelho(No *no){
+    if(no == NULL)
+    return 0;
+    if(no->cor == VERMELHO)
+    return 1;
+    return 0;
+}
+
+void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado){
+    No *pai = avaliado->pai;
+    No *avo = pai->pai;
+    No *tio = avo->dir;
+
+    if(eh_vermelho(tio)){
+
+    }
+
+}
+
+void correcao(No **r, No *avaliado){
+    while(avaliado->pai!=NULL){
+        if(avaliado->pai->cor == PRETO)
+        break;
+
+        No *pai = avaliado->pai;
+        No *avo = pai->pai;
+        if(avo->esq == pai){ //o pai é um filho esquerdo 
+        corrigir_pai_que_e_filho_esquerdo(r, avaliado);
+        }else{ //o pai é um filho direito
+        printf("Correcao de Pai que é filho direito ainda não implementado");
         }
     }
+}
+
+int inserirRB(No **r,int valor){
+    No *noInserido;
+    noInserido = inserir(r,valor);
+    correcao(r,noInserido);
+    (*r)->cor = PRETO;
 }
 
 int existe_n(No **r,int n){
@@ -154,9 +216,6 @@ void rsd(No **r){
 No *aux;
 aux = *r;
 }
-
-
-
 int menu(){
     int op;
     printf("------MENU------\n");
