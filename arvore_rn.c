@@ -16,12 +16,14 @@ void preordem(No **r);
 No* maior_elemento(No **r);
 int remover(No **r,int vlr);
 void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado);
+void corrigir_pai_que_e_filho_direito(No **r, No *avaliado);
 int eh_vermelho(No *no);
 int inserirRB(No **r,int valor);
 void correcao(No **r, No *avaliado);
 No* inserir(No **r,int vlr);
 int existe_n(No **r,int n);
 void rse(No **r);
+void rsd(No **r);
 
 int main(){
      No *r = NULL;
@@ -163,6 +165,7 @@ void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado){
     No *tio = avo->dir;
 
     if(eh_vermelho(tio)){
+        printf("Caso 1 (pai é filho esquerdo) \n");
     pai->cor = PRETO;
     avo->cor = VERMELHO;
     tio->cor = PRETO;
@@ -172,6 +175,7 @@ void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado){
     avaliado = avo;
     }else{
         if(pai->dir == avaliado){ //caso 2
+        printf("Caso 2 (pai é filho esquerdo) \n");
         if(avo == NULL){
             rse(&pai);
             *r = pai;
@@ -186,6 +190,74 @@ void corrigir_pai_que_e_filho_esquerdo(No **r, No *avaliado){
     }
         avaliado=pai->esq;
         }
+        printf("Caso 3 (pai é filho esquerdo) \n");
+        if(avo->pai == NULL){
+         rsd(&avo);
+        *r = avo;   
+        }else{
+        if(avo->pai->dir == pai){
+            rsd(&avo);
+            avo->pai->esq = avo;
+           }else{
+               rsd(&avo);
+               avo->pai->dir = avo;
+           } 
+        }
+        pai->cor = PRETO;
+        pai->dir->cor = VERMELHO;
+        //preordem(&pai);
+        //exit(0);
+    }
+}
+
+void corrigir_pai_que_e_filho_direito(No **r, No *avaliado){
+    No *pai = avaliado->pai;
+    No *avo = pai->pai;
+    No *tio = avo->esq;
+
+    if(eh_vermelho(tio)){
+        printf("Caso 1 (pai é filho direito) \n");
+    pai->cor = PRETO;
+    avo->cor = VERMELHO;
+    tio->cor = PRETO;
+
+    preordem(&avo);
+
+    avaliado = avo;
+    }else{
+        if(pai->esq == avaliado){ //caso 2
+        printf("Caso 2 (pai é filho direito) \n");
+        if(avo == NULL){
+            rsd(&pai);
+            *r = pai;
+        }else{
+            if(avo->dir == pai){
+            rsd(&pai);
+            avo->dir = pai;
+    }else{
+        avo->esq = pai;
+         }
+
+    }
+        avaliado=pai->dir;
+        }
+        printf("Caso 3 (pai é filho direito) \n");
+        if(avo->pai == NULL){
+         rse(&avo);
+        *r = avo;   
+        }else{
+        if(avo->pai->esq == pai){
+            rse(&avo);
+            avo->pai->dir = avo;
+           }else{
+               rse(&avo);
+               avo->pai->esq = avo;
+           } 
+        }
+        pai->cor = PRETO;
+        pai->esq->cor = VERMELHO;
+//        preordem(&pai);
+//        exit(0);
     }
 }
 void correcao(No **r, No *avaliado){
@@ -198,7 +270,7 @@ void correcao(No **r, No *avaliado){
         if(avo->esq == pai){ //o pai é um filho esquerdo 
         corrigir_pai_que_e_filho_esquerdo(r, avaliado);
         }else{ //o pai é um filho direito
-        printf("Correcao de Pai que é filho direito ainda não implementado");
+        corrigir_pai_que_e_filho_direito(r, avaliado);
         }
     }
 }
@@ -235,9 +307,19 @@ void rse(No **r){
 }
 
 void rsd(No **r){
-No *aux;
-aux = *r;
+    No *aux;
+    aux = *r;
+    *r = (*r)->esq;
+    aux->esq = (*r)->dir;
+    (*r)->dir = aux;
+    (*r)->pai = aux->pai;
+    aux->pai = *r;
+    if(aux->esq!=NULL)
+    aux->esq->pai=aux;
+    if(aux->esq!=NULL)
+    aux->esq->pai =aux;
 }
+
 int menu(){
     int op;
     printf("------MENU------\n");
