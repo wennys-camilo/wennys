@@ -34,6 +34,11 @@ int main(){
     }
     printf("\n");
  }
+ 
+ for(i=4; i>=0;i--){
+  free(p[i]);
+  
+  free(p);
 
     return 0;
 }
